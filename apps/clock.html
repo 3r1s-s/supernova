@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Zone Converter</title>
+    <link href="../styles.css" rel="stylesheet" />
+    <link href="apps.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://eris.pages.dev/fonts.css" />
+    <style>
+        :root {
+            text-align: left;
+            color-scheme: dark;
+            scrollbar-width: none;
+
+            height: 100%;
+        }
+
+        .main {
+            gap: 5px;
+        }
+
+        select {
+            background: var(--app-800);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+
+            width: 100%;
+        }
+
+        select:active, select:focus {
+            background: var(--app-700);
+            outline: none;
+        }
+
+        input {
+            background: var(--app-400);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        input:active, input:focus {
+            background: var(--app-300);
+            outline: none;
+        }
+
+        select, input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+            -webkit-appearance: none; /* Chrome, Safari, Edge */
+            appearance: none; /* Standard */
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        select {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+        }
+
+        select::-ms-expand, input::-ms-expand {
+            display: none;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        .select-div {
+            width: 100%;
+            position: relative;
+        }
+
+        .select-div::after {
+            content: "▾"; /* Downward arrow */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Keeps click on the select */
+            color: var(--app-text);
+        }
+
+        .conversion {
+            display: flex;
+            gap: 5px;
+        }
+
+        .conversion div {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .big-time {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="main">
+            <h1>Convert Time Zones</h1>
+            <div class="conversion">
+                <div>
+                    <input type="datetime-local" id="from-time" class="big-time" step="60" />
+                    <div class="select-div">
+                        <select id="from-zone"></select>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" id="to-time" class="big-time" readonly />
+                    <div class="select-div">
+                        <select id="to-zone"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        const fromTime = document.getElementById("from-time");
+        const fromZone = document.getElementById("from-zone");
+        const toTime = document.getElementById("to-time");
+        const toZone = document.getElementById("to-zone");
+
+        // UTC offset zones from -12 to +14
+        const timeZones = [
+            { label: "HST (UTC-10)", offset: -10 },
+            { label: "AKST (UTC-9)", offset: -9 },
+            { label: "PST (UTC-8)", offset: -8 },
+            { label: "MST (UTC-7)", offset: -7 },
+            { label: "CST (UTC-6)", offset: -6 },
+            { label: "EST (UTC-5)", offset: -5 },
+            { label: "AST (UTC-4)", offset: -4 },
+            { label: "NST (UTC-3:30)", offset: -3.5 },
+            { label: "WAT (UTC-3)", offset: -3 },
+            { label: "GMT (UTC+0)", offset: 0 },
+            { label: "BST (UTC+1)", offset: 1 },
+            { label: "CET (UTC+1)", offset: 1 },
+            { label: "EET (UTC+2)", offset: 2 },
+            { label: "MSK (UTC+3)", offset: 3 },
+            { label: "AST (UTC+3)", offset: 3 },
+            { label: "PKT (UTC+5)", offset: 5 },
+            { label: "AFT (UTC+4:30)", offset: 4.5 },
+            { label: "IST (UTC+5:30)", offset: 5.5 },
+            { label: "BST (UTC+6)", offset: 6 },
+            { label: "VLAT (UTC+10)", offset: 10 },
+            { label: "CHADT (UTC+12:45)", offset: 12.75 },
+            { label: "NZDT (UTC+13)", offset: 13 },
+            { label: "KOST (UTC+14)", offset: 14 }
+        ];
+
+        function getUserTimezoneOffset() {
+            const offset = -new Date().getTimezoneOffset() / 60;
+            return offset;
+        }
+
+        function populateTimeZones() {
+            fromZone.innerHTML = "";
+            toZone.innerHTML = "";
+            
+            timeZones.forEach(tz => {
+                const opt1 = new Option(tz.label, tz.offset);
+                const opt2 = new Option(tz.label, tz.offset);
+                fromZone.appendChild(opt1);
+                toZone.appendChild(opt2);
+            });
+
+            // users timezone
+            const userOffset = getUserTimezoneOffset();
+            fromZone.value = userOffset;
+            toZone.value = 0; // UTC
+        }
+
+        function convertTime() {
+            const inputVal = fromTime.value;
+            if (!inputVal) {
+                toTime.value = "";
+                return;
+            }
+
+            const fromOffset = parseFloat(fromZone.value);
+            const toOffset = parseFloat(toZone.value);
+
+            const inputDate = new Date(inputVal);
+            
+            const utcTime = new Date(inputDate.getTime() - (fromOffset * 60 * 60 * 1000));
+            
+            const targetTime = new Date(utcTime.getTime() + (toOffset * 60 * 60 * 1000));
+
+            const year = targetTime.getFullYear();
+            const month = String(targetTime.getMonth() + 1).padStart(2, '0');
+            const day = String(targetTime.getDate()).padStart(2, '0');
+            const hours = String(targetTime.getHours()).padStart(2, '0');
+            const minutes = String(targetTime.getMinutes()).padStart(2, '0');
+
+            toTime.value = `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        fromTime.addEventListener("input", convertTime);
+        fromZone.addEventListener("change", convertTime);
+        toZone.addEventListener("change", convertTime);
+
+        populateTimeZones();
+        
+        // Set current time in the input
+        const now = new Date();
+        now.setSeconds(0, 0);
+        fromTime.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        convertTime();
+    </script>
+</body>
+
+</html>

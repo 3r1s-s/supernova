@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "title": "Calculator",
+        "src": "/apps/calc.html",
+        "keywords": "calc, calculator"
+    },
+    {
+        "id": 2,
+        "title": "Define",
+        "src": "/apps/define.html",
+        "keywords": "dictionary, define, spell"
+    },
+    {
+        "id": 3,
+        "title": "Color",
+        "src": "/apps/color.html",
+        "keywords": "color, picker, colour"
+    },
+    {
+        "id": 4,
+        "title": "Convert",
+        "src": "/apps/convert.html",
+        "keywords": "convert, units, metric, imperial, conversion"
+    },
+    {
+        "id": 5,
+        "title": "Clock",
+        "src": "/apps/clock.html",
+        "keywords": "clock, world clock, time zone"
+    }
+]

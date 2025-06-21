@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert</title>
+    <link href="../styles.css" rel="stylesheet">
+    <link href="apps.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://eris.pages.dev/fonts.css">
+    <style>
+        :root {
+            text-align: left;
+            color-scheme: dark;
+            scrollbar-width: none;
+
+            height: 100%;
+        }
+
+        .main {
+            gap: 5px;
+        }
+
+        select {
+            background: var(--app-800);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+
+            width: 100%;
+        }
+
+        select:active, select:focus {
+            background: var(--app-700);
+            outline: none;
+        }
+
+        input {
+            background: var(--app-400);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        input:active, input:focus {
+            background: var(--app-300);
+            outline: none;
+        }
+
+        select, input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+            -webkit-appearance: none; /* Chrome, Safari, Edge */
+            appearance: none; /* Standard */
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        select {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+        }
+
+        select::-ms-expand, input::-ms-expand {
+            display: none;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        .select-div {
+            width: 100%;
+            position: relative;
+        }
+
+        .select-div::after {
+            content: "▾"; /* Downward arrow */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Keeps click on the select */
+            color: var(--app-text);
+        }
+
+        .conversion {
+            display: flex;
+            gap: 5px;
+        }
+
+        .conversion div {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .big-number {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="main">
+            <h1>Convert Units</h1>
+            <div class="select-div">
+                <select id="format">
+                    <option value="length">Length</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="volume">Volume</option>
+                    <option value="weight">Weight</option>
+                </select>
+            </div>
+            <div class="conversion">
+                <div>
+                    <input type="number" id="from" class="big-number" value="0">
+                    <div class="select-div">
+                        <select id="from-unit">
+                            <option value="m">m</option>
+                            <option value="km">km</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <input type="number" id="to" class="big-number" value="0">
+                    <div class="select-div">
+                        <select id="to-unit">
+                            <option value="m">m</option>
+                            <option value="km">km</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script>
+    const formatSelect = document.getElementById('format');
+    const fromInput    = document.getElementById('from');
+    const fromUnitSel  = document.getElementById('from-unit');
+    const toUnitSel    = document.getElementById('to-unit');
+    const toInput      = document.getElementById('to');
+
+    /* ------------------------ populate unit dropdowns --------------------- */
+    function changeFormat () {
+      const format = formatSelect.value;
+      fromInput.value = '0';
+
+      const setOptions = (el, opts) => el.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+
+      switch (format) {
+        case 'length':
+          setOptions(fromUnitSel, ['km','m','cm','mm','in','ft','mi','au']);
+          setOptions(toUnitSel,   ['km','m','cm','mm','in','ft','mi','au']);
+          break;
+        case 'temperature':
+          setOptions(fromUnitSel, ['°F','°C']);
+          setOptions(toUnitSel,   ['°C','°F']);
+          break;
+        case 'volume':
+          setOptions(fromUnitSel, ['l','ml']);
+          setOptions(toUnitSel,   ['l','ml']);
+          break;
+        case 'weight':
+          setOptions(fromUnitSel, ['kg','g']);
+          setOptions(toUnitSel,   ['kg','g']);
+          break;
+      }
+      convert();
+    }
+
+    /* ------------------------- conversion helpers ------------------------- */
+    const lengthFactor = { km:1000, m:1, cm:0.01, mm:0.001, in:0.0254, ft:0.3048, mi:1609.34, au:149597870.7 };
+    const volumeFactor = { l:1, ml:0.001 };
+    const weightFactor = { kg:1000, g:1 };
+
+    function convertLength(v, from, to)  { return v * lengthFactor[from] / lengthFactor[to]; }
+    function convertVolume(v, from, to)  { return v * volumeFactor[from] / volumeFactor[to]; }
+    function convertWeight(v, from, to)  { return v * weightFactor[from] / weightFactor[to]; }
+
+    function convertTemperature(v, from, to) {
+      if(from === '°F' && to === '°C') return (v - 32) * 5/9;
+      if(from === '°C' && to === '°F') return (v * 9/5) + 32;
+      return v; // same unit
+    }
+
+    /* ------------------------- main conversion --------------------------- */
+    function convert(){
+      const val = parseFloat(fromInput.value);
+      if (isNaN(val)) { toInput.value=''; return; }
+
+      const from = fromUnitSel.value;
+      const to   = toUnitSel.value;
+
+      let result;
+      switch(formatSelect.value){
+        case 'length':      result = convertLength(val, from, to); break;
+        case 'volume':      result = convertVolume(val, from, to); break;
+        case 'weight':      result = convertWeight(val, from, to); break;
+        case 'temperature': result = convertTemperature(val, from, to); break;
+      }
+      // Round to 4 decimals max, strip trailing zeros
+      toInput.value = +parseFloat(result.toFixed(4));
+    }
+
+    /* ------------------------- event listeners --------------------------- */
+    formatSelect.addEventListener('change', changeFormat);
+    fromInput.addEventListener('input', convert);
+    fromUnitSel.addEventListener('change', convert);
+    toUnitSel.addEventListener('change', convert);
+
+    // initialize on load
+    changeFormat();
+    </script>
+</body>
+</html>

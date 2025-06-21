@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../styles.css" rel="stylesheet">
+    <link href="apps.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://eris.pages.dev/fonts.css">
+    <style>
+        .color-picker {
+            width: 100%;
+            height: 100%;
+            background-color: var(--app-600);
+            border: 0px solid var(--app-700);
+            padding: 20px;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+    
+        .color-display {
+            background-color: var(--app-400);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    
+        .color-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            border: 2px solid var(--app-700);
+            background-color: #ff0000;
+        }
+    
+        .color-info {
+            flex: 1;
+        }
+    
+        .color-value {
+            color: var(--app-text);
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    
+        .color-formats {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+    
+        .format-btn {
+            background-color: var(--app-700);
+            color: var(--app-text);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: 
+                background-color 0.3s cubic-bezier(0.075, 0.82, 0.165, 1),
+                color 0.3s cubic-bezier(0.075, 0.82, 0.165, 1),
+                border-radius 0.3s cubic-bezier(0.075, 0.82, 0.165, 1),
+                padding 0.3s cubic-bezier(0.075, 0.82, 0.165, 1)
+            ;
+        }
+    
+        .format-btn:hover {
+            background-color: var(--app-800);
+        }
+    
+        .format-btn.active {
+            /* color: var(--app-100); */
+            background-color: var(--app-blue);
+            border-radius: 100px;
+            padding: 5px 15px;
+            font-weight: 700;
+        }
+    
+        .picker-container {
+            flex: 1;
+            display: flex;
+            gap: 15px;
+            min-height: 0;
+        }
+    
+        .main-picker {
+            position: relative;
+            flex: 1;
+            min-height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+    
+        .sliders-container {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            /* width: 70px; */
+        }
+    
+        .hue-slider {
+            /* flex: 1; */
+            width: 20px;
+            border-radius: 100px;
+            background: linear-gradient(to bottom, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            position: relative;
+            cursor: pointer;
+        }
+    
+        .slider-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    
+        .slider-handle:active {
+            cursor: grabbing;
+        }
+    
+        .alpha-slider {
+            flex: 1;
+            width: 20px;
+            border-radius: 100px;
+            position: relative;
+            cursor: pointer;
+            background: linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 10px 10px;
+            background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+    
+            display: none;
+        }
+    
+        .alpha-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #ff0000, transparent);
+        }
+    
+        .preset-colors {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+
+            display: none;
+        }
+    
+        .preset-color {
+            width: 100%;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid var(--app-700);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+    
+        .preset-color:hover {
+            transform: scale(1.1);
+        }
+    
+        .copy-btn {
+            background-color: var(--app-700);
+            color: var(--app-text);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 
+            background-color 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
+    
+        .copy-btn:hover {
+            background-color: var(--app-800);
+        }
+    
+        .copy-btn:active {
+            background-color: var(--app-dark-green);
+        }
+    
+        .picker-handle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="color-picker">
+        <div class="color-display">
+            <div class="color-preview" id="colorPreview"></div>
+            <div class="color-info">
+                <div class="color-value" id="colorValue">#FF0000</div>
+                <div class="color-formats">
+                    <button class="format-btn active" data-format="hex">HEX</button>
+                    <button class="format-btn" data-format="rgb">RGB</button>
+                    <button class="format-btn" data-format="hsl">HSL</button>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="picker-container">
+            <div class="main-picker" id="mainPicker">
+                <div class="picker-handle" id="pickerHandle"></div>
+            </div>
+
+            <div class="sliders-container">
+                <div class="hue-slider" id="hueSlider">
+                    <div class="slider-handle" id="hueHandle"></div>
+                </div>
+
+                <div class="alpha-slider" id="alphaSlider">
+                    <div class="alpha-gradient" id="alphaGradient"></div>
+                    <div class="slider-handle" id="alphaHandle"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preset-colors" id="presetColors"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        class ColorPicker {
+            constructor() {
+                this.h = 0;    // hue 0–360
+                this.s = 100;  // saturation 0–100%
+                this.v = 100;  // value (brightness) 0–100%
+                this.a = 1;    // alpha 0–1
+                this.format = 'hex';
+
+                this.initElements();
+                this.initEventListeners();
+                this.initPresetColors();
+                this.updateDisplay();
+            }
+
+            initElements() {
+                this.mainPicker = document.getElementById('mainPicker');
+                this.pickerHandle = document.getElementById('pickerHandle');
+                this.hueSlider = document.getElementById('hueSlider');
+                this.hueHandle = document.getElementById('hueHandle');
+                this.alphaSlider = document.getElementById('alphaSlider');
+                this.alphaHandle = document.getElementById('alphaHandle');
+                this.alphaGradient = document.getElementById('alphaGradient');
+                this.colorPreview = document.getElementById('colorPreview');
+                this.colorDisplay = document.querySelector('.color-display');
+                this.colorValue = document.getElementById('colorValue');
+                this.copyBtn = document.getElementById('copyBtn');
+            }
+
+            initEventListeners() {
+                document.querySelectorAll('.format-btn').forEach(btn =>
+                    btn.addEventListener('click', e => {
+                        document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.format = e.target.dataset.format;
+                        this.updateDisplay();
+                    })
+                );
+                this.copyBtn.addEventListener('click', () => this.copyColor());
+                this.mainPicker.addEventListener('mousedown', e => this.handleMainPickerStart(e));
+                this.mainPicker.addEventListener('touchstart', e => this.handleMainPickerStart(e));
+                this.hueSlider.addEventListener('mousedown', e => this.handleHueSliderStart(e));
+                this.hueSlider.addEventListener('touchstart', e => this.handleHueSliderStart(e));
+                this.alphaSlider.addEventListener('mousedown', e => this.handleAlphaSliderStart(e));
+                this.alphaSlider.addEventListener('touchstart', e => this.handleAlphaSliderStart(e));
+            }
+
+            initPresetColors() {
+                const presets = [
+                    '#FF0000', '#FF8800', '#FFFF00', '#88FF00',
+                    '#00FF00', '#00FF88', '#00FFFF', '#0088FF',
+                    '#0000FF', '#8800FF', '#FF00FF', '#FF0088',
+                    '#FFFFFF', '#CCCCCC', '#888888', '#000000'
+                ];
+                const container = document.getElementById('presetColors');
+                presets.forEach(color => {
+                    const div = document.createElement('div');
+                    div.className = 'preset-color';
+                    div.style.backgroundColor = color;
+                    div.addEventListener('click', () => this.setColorFromHex(color));
+                    container.appendChild(div);
+                });
+            }
+
+            handleMainPickerStart(e) {
+                e.preventDefault();
+                const move = ev => this.updateSV(ev);
+                const up = () => {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', up);
+                    document.removeEventListener('touchmove', move);
+                    document.removeEventListener('touchend', up);
+                };
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', up);
+                document.addEventListener('touchmove', move);
+                document.addEventListener('touchend', up);
+                this.updateSV(e);
+            }
+
+            updateSV(e) {
+                const rect = this.mainPicker.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+                const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+
+                this.s = (x / rect.width) * 100;
+                this.v = (1 - y / rect.height) * 100;
+                this.updateDisplay();
+            }
+
+            handleHueSliderStart(e) {
+                e.preventDefault();
+                const move = ev => this.updateHue(ev);
+                const up = () => {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', up);
+                    document.removeEventListener('touchmove', move);
+                    document.removeEventListener('touchend', up);
+                };
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', up);
+                document.addEventListener('touchmove', move);
+                document.addEventListener('touchend', up);
+                this.updateHue(e);
+            }
+
+            updateHue(e) {
+                const rect = this.hueSlider.getBoundingClientRect();
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+                this.h = (y / rect.height) * 360;
+                this.updateDisplay();
+            }
+
+            handleAlphaSliderStart(e) {
+                e.preventDefault();
+                const move = ev => this.updateAlpha(ev);
+                const up = () => {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', up);
+                    document.removeEventListener('touchmove', move);
+                    document.removeEventListener('touchend', up);
+                };
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', up);
+                document.addEventListener('touchmove', move);
+                document.addEventListener('touchend', up);
+                this.updateAlpha(e);
+            }
+
+            updateAlpha(e) {
+                const rect = this.alphaSlider.getBoundingClientRect();
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+                this.a = 1 - (y / rect.height);
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                const rgb = this.hsvToRgb(this.h, this.s, this.v);
+
+                // background for saturation/value picker
+                this.mainPicker.style.background = `
+          linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)),
+          linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0)),
+          hsl(${this.h},100%,50%)`;
+
+                // Handles positioning
+                this.pickerHandle.style.left = (this.s / 100) * this.mainPicker.offsetWidth + 'px';
+                this.pickerHandle.style.top = ((1 - this.v / 100) * this.mainPicker.offsetHeight) + 'px';
+                this.hueHandle.style.top = (this.h / 360) * this.hueSlider.offsetHeight + 'px';
+                this.alphaHandle.style.top = ((1 - this.a) * this.alphaSlider.offsetHeight) + 'px';
+
+                // alpha gradient & preview color
+                this.alphaGradient.style.background =
+                    `linear-gradient(to bottom, rgba(${rgb.r},${rgb.g},${rgb.b},1), rgba(${rgb.r},${rgb.g},${rgb.b},0))`;
+                this.colorPreview.style.backgroundColor =
+                    `rgba(${rgb.r},${rgb.g},${rgb.b},${this.a})`;
+
+                this.updateColorValue(rgb);
+            }
+
+            updateColorValue(rgb) {
+                let text;
+                if (this.format === 'hex') {
+                    text = this.rgbToHex(rgb.r, rgb.g, rgb.b);
+                } else if (this.format === 'rgb') {
+                    text = this.a < 1
+                        ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${this.a.toFixed(2)})`
+                        : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                } else {
+                    const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+                    text = this.a < 1
+                        ? `hsla(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%, ${this.a.toFixed(2)})`
+                        : `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`;
+                }
+                this.colorValue.textContent = text;
+            }
+
+            hsvToRgb(h, s, v) {
+                s /= 100; v /= 100; h /= 60;
+                const c = v * s;
+                const x = c * (1 - Math.abs(h % 2 - 1));
+                const m = v - c;
+                let r = 0, g = 0, b = 0;
+
+                if (h >= 0 && h < 1) [r, g, b] = [c, x, 0];
+                else if (h < 2) [r, g, b] = [x, c, 0];
+                else if (h < 3) [r, g, b] = [0, c, x];
+                else if (h < 4) [r, g, b] = [0, x, c];
+                else if (h < 5) [r, g, b] = [x, 0, c];
+                else[r, g, b] = [c, 0, x];
+
+                return {
+                    r: Math.round((r + m) * 255),
+                    g: Math.round((g + m) * 255),
+                    b: Math.round((b + m) * 255)
+                };
+            }
+
+            rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+            }
+
+            rgbToHsl(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h = 0, s = 0, l = (max + min) / 2;
+
+                if (max !== min) {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+                    else if (max === g) h = (b - r) / d + 2;
+                    else h = (r - g) / d + 4;
+                    h *= 60;
+                }
+                return { h, s: s * 100, l: l * 100 };
+            }
+
+            setColorFromHex(hex) {
+                const rgb = this.hexToRgb(hex);
+                if (!rgb) return;
+                const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+                this.h = hsl.h;
+                this.s = hsl.s;
+                this.v = hsl.l; // approximate
+                this.a = 1;
+                this.updateDisplay();
+            }
+
+            hexToRgb(hex) {
+                const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return m ? {
+                    r: parseInt(m[1], 16),
+                    g: parseInt(m[2], 16),
+                    b: parseInt(m[3], 16)
+                } : null;
+            }
+
+            async copyColor() {
+                try {
+                    await navigator.clipboard.writeText(this.colorValue.textContent);
+                    this.copyBtn.textContent = 'Copied!';
+                    setTimeout(() => (this.copyBtn.textContent = 'Copy'), 1000);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => new ColorPicker());
+    </script>
+</body>
+</html>
