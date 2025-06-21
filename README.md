@@ -18,6 +18,6 @@ Backend provided by Nova Search & neubot by [JoshAtticus](https://github.com/Jos
 ---
 ![smart](https://github.com/3r1s-s/supernova/blob/main/src/images/screenshots/screenshot-chat.png?raw=true)
 
-**🔍 Or use its advanced search tools!**
+**🔍 Or use its VERY advanced search tools!**
 ---
 ![Advanced Search](https://github.com/3r1s-s/supernova/blob/main/src/images/screenshots/screenshot-advanced-search.png?raw=true)
