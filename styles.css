@@ -1653,6 +1653,10 @@ iframe {
     transform: translateY(20px);
 }
 
+.greeting.visible {
+    visibility: visible;
+}
+
 .toggle {
     width: 20px;
     height: 20px;

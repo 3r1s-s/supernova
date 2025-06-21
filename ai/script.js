@@ -48,6 +48,7 @@ function askNeu(askquery) {
                     setTimeout(() => {
                         document.querySelector('.aura-glow-fade').classList.remove('show');
                         document.querySelector('.greeting').classList.remove('hide');
+                        document.querySelector('.greeting').classList.add('visible');
                     }, 50);
                 });
             } catch (error) {

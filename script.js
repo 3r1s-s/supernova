@@ -185,7 +185,7 @@ function paginate(data) {
         if (i == page) {
             option.classList.add('selected');
         }
-        option.href = `../?q=${query}&page=${i}`;
+        option.href = `${formatUrl(homeurl)}/?q=${query}&page=${i}`;
         pageselect.appendChild(option);
     }
 }
