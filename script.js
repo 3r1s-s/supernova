@@ -15,7 +15,7 @@ window.addEventListener('load', (event) => {
 
     search.value = query;
     placeholders();
-    document.getElementById('ai').href = `/ai/?q=${query}`;
+    document.getElementById('ai').href = `${formatUrl(homeurl)}/ai/?q=${query}`;
     getResults(page);
     document.title = `${query} - SuperNova`;
     app.style.opacity = 1;
