@@ -207,7 +207,7 @@ function openSettings() {
             <span class="modal-subheader">Account</span>
             <div class="modal-section" id="account-sec">
                 <div style="display:flex;gap: 10px;">
-                    <img src="../src/images/user-icon.svg" class="pfp" id="user-icon">
+                    <img src="${formatUrl(homeurl)}/src/images/user-icon.svg" class="pfp" id="user-icon">
                     <div style="display:flex;flex-direction:column;align-items: baseline;gap: 10px;">
                         <span id="username" class="placeholder-text"></span>
                         <button class="modal-button" id="sign-in" onclick=""></button>
@@ -297,7 +297,7 @@ function openSettings() {
             } else {
                 document.getElementById('account-sec').innerHTML = `
                 <div style="display:flex;gap: 10px;">
-                    <img src="../src/images/user-icon.svg" class="pfp" id="user-icon">
+                    <img src="${formatUrl(homeurl)}/src/images/user-icon.svg" class="pfp" id="user-icon">
                     <div style="display:flex;flex-direction:column;align-items: baseline;gap: 10px;">
                         <span id="username">Sign in for increased rate limits and enhanced features</span>
                         <button class="modal-button" id="sign-in" onclick="login()">Sign In</button>
