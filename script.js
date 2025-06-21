@@ -171,7 +171,7 @@ search.addEventListener('keydown', (event) => {
 });
 
 async function fetchApps() {
-    const response = await fetch('/apps/apps.json');
+    const response = await fetch(`${formatUrl(homeurl)}/apps/apps.json`);
     return response.json();
 }
 
