@@ -1,8 +1,9 @@
-
 function openModal(data) {
     const modalOuter = document.querySelector(".modal-outer");
     const modalInner = document.querySelector(".modal-inner");
     const modal = document.querySelector(".modal");
+
+    haptic();
 
     if (data) {
         if (data.small) {
@@ -45,6 +46,41 @@ function openModal(data) {
     }
     modalOuter.style.visibility = "visible";
     modalOuter.classList.add("open");
+
+    let sy, my, ay;
+    modal.addEventListener('touchstart', (e) => {
+        ay = !modalInner.scrollTop > 0;
+        sy = e.touches[0].clientY;
+        my = e.touches[0].clientY;           
+        modal.style.transition = 'none';
+        modalInner.style = 'overscroll-behavior: none';
+    });
+
+    modal.addEventListener('touchmove', (e) => {
+        my = e.touches[0].clientY;
+        const dist = my - sy;
+        if (dist > 0 && ay) {
+            modalInner.style = 'overscroll-behavior: none';
+            modal.style.transform = `translateY(${dist}px)`;
+        } else {
+            modalInner.style = '';
+            modal.style.transform = '';
+            modal.style.transition = '';
+        }
+    });
+
+    modal.addEventListener('touchend', () => {
+        const dist = my - sy;
+        if (dist > 125 && ay) {
+            modal.style.transition = '';
+            modal.style.transform = 'translateY(100%)';
+            closeModal();
+        } else {
+            modalInner.style = '';
+            modal.style.transform = '';
+            modal.style.transition = '';
+        }
+    });
 }
 
 function closeModal() {

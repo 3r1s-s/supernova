@@ -1516,7 +1516,7 @@ iframe {
         border: none;
     
         transform: translateY(100%);
-        transition: transform cubic-bezier(0.68, 0.1, 0.27, 1) 0.4s;
+        transition: transform cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
     }
     
     .modal-outer.open > .modal {
@@ -1651,10 +1651,6 @@ iframe {
 .greeting.hide span {
     opacity: 0;
     transform: translateY(20px);
-}
-
-.greeting.visible {
-    visibility: visible;
 }
 
 .toggle {

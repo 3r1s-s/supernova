@@ -1,5 +1,6 @@
 const neuboturl = 'https://neubot.joshatticus.site';
 const homeurl = 'https://eris.pages.dev/supernova';
+// const homeurl = 'http://127.0.0.1:5500';
 const url = 'https://api.novasearch.xyz';
 
 const formatUrl = url => url.endsWith('/') ? url.slice(0, -1) : url;
@@ -113,6 +114,8 @@ function toggleSetting(id) {
         element.classList.add('checked');
         settings.set(id, true);
     }
+
+    haptic();
 }
 
 function accordion(element) {
@@ -135,6 +138,8 @@ function toggleRadio(group, id) {
     selectedItem.classList.add('selected');
 
     settings.set(group, id);
+
+    haptic();
 }
 
 function pageElements() {
