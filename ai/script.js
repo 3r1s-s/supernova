@@ -116,6 +116,10 @@ function aiMessage(message, details) {
                 <span class="message-text">${messageJson.error}</span>
             </div>
             `;
+
+            document.querySelector('.chat').append(messageDiv);
+            document.querySelector('.greeting').classList.add('hide');
+            return;
         }
 
         if (messageJson.type == 'search_results') {
