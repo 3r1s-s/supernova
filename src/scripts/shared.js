@@ -1,6 +1,6 @@
 const neuboturl = 'https://neubot.joshatticus.site';
-// const homeurl = 'https://eris.pages.dev/supernova';
-const homeurl = 'http://127.0.0.1:5500';
+const homeurl = 'https://eris.pages.dev/supernova';
+// const homeurl = 'http://127.0.0.1:5500';
 const url = 'https://api.novasearch.xyz';
 
 const formatUrl = url => url.endsWith('/') ? url.slice(0, -1) : url;
