@@ -228,9 +228,7 @@ function searchBar() {
 }
 
 function navigate(searchquery) {
-    const navurl = new URL(window.location.href);
-    navurl.searchParams.set('q', searchquery);
-    window.location.href = `${navurl}`;
+    window.location.href = `${homeurl}/?q=${searchquery}&page=${1}`;
 }
 
 neumessage.addEventListener('keydown', (event) => {

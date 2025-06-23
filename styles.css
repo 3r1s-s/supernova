@@ -1586,6 +1586,16 @@ iframe {
         border-top-left-radius: 25px;
         border-top-right-radius: 25px;
     }
+
+    .hero.fixed {
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .logo.big {
+        font-size: 2.5rem;
+        display: flex;
+    }
 }
 
 .hero {
