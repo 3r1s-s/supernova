@@ -1718,8 +1718,16 @@ iframe {
     box-sizing: border-box;
 }
 
+.light .toggle {
+    border: 2px solid var(--app-text);
+}
+
 :active > .toggle {
     border: 2px solid var(--app-800);
+}
+
+.light :active > .toggle {
+    border: 2px solid var(--brand-purple);
 }
 
 .checked .toggle {
@@ -1733,6 +1741,10 @@ iframe {
     color: var(--app-800);
 }
 
+.light .toggle svg {
+    color: var(--brand-purple);
+}
+
 :active > .toggle svg {
     opacity: 1;
 }
@@ -1740,6 +1752,11 @@ iframe {
 .checked .toggle svg {
     opacity: 1;
     color: var(--app-text);
+}
+
+.light .checked .toggle svg {
+    opacity: 1;
+    color: var(--app-100);
 }
 
 .alert-outer {
