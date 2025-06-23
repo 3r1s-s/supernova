@@ -59,6 +59,7 @@ function askNeu(askquery) {
             document.querySelector('.aura-glow-fade').classList.add('show');
             document.querySelector('.chat-header').classList.remove('hide');
             document.querySelector('.greeting').classList.add('hide');
+            document.querySelector('.chat-header').style.visibility = 'visible';
             document.getElementById('title-query').innerHTML = askquery;
             fetch(`${formatUrl(neuboturl)}/api/user`, {
                 method: 'GET',

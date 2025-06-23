@@ -57,13 +57,13 @@
 }
 
 .light {
-    --app-100: #f6f3ff;
-    --app-200: #f6f3ff;
-    --app-300: #f6f3ff;
-    --app-400: #f6f3ff;
+    --app-100: #ffffff;
+    --app-200: #fefefe;
+    --app-300: #fefefe;
+    --app-400: #fefefe;
     --app-500: #f6f3ff;
-    --app-600: #e1dbf5;
-    --app-700: #dcd6f0;
+    --app-600: #f6f3ff;
+    --app-700: #f6f3ff;
     --app-800: #ecd9f4;
     --app-900: #ecd9f4;
 
@@ -276,6 +276,10 @@ iframe {
 
 .hero .search {
     max-width: 600px;
+}
+
+.light .search {
+    box-shadow: 0px 2px 8px 0px rgba(60, 64, 67, 0.25);
 }
 
 .search input {
