@@ -1557,8 +1557,9 @@ iframe {
     .message .message-text {
         border-top-left-radius: 10px;
     }
-
+    
     .message.user .message-text {
+        border-top-left-radius: 50px;
         border-bottom-right-radius: 10px;
     }
 

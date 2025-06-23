@@ -49,6 +49,7 @@ function askNeu(askquery) {
                         document.querySelector('.aura-glow-fade').classList.remove('show');
                         document.querySelector('.greeting').classList.remove('hide');
                         document.querySelector('.greeting').style.visibility = 'visible';
+                        document.querySelector('.chat-header').style.visibility = 'visible';
                     }, 50);
                 });
             } catch (error) {
