@@ -1533,6 +1533,48 @@ iframe {
         font-size: 0.75rem;
         flex-wrap: wrap;
     }
+
+    .message {
+        padding: 0;
+    }
+
+    .message.ai-search-result {
+        width: 100%;
+    }
+
+    .message.user {
+        gap: 0;
+    }
+
+    .message.user .pfp {
+        display: none;
+    }
+
+    .message-content .username {
+        display: none;
+    }
+
+    .message .message-text {
+        border-top-left-radius: 10px;
+    }
+
+    .message.user .message-text {
+        border-bottom-right-radius: 10px;
+    }
+
+    .ai-result {
+        border-radius: 10px;
+    }
+
+    .ai-result:last-child {
+        border-bottom-left-radius: 25px;
+        border-bottom-right-radius: 25px;
+    }
+
+    .ai-result:first-child {
+        border-top-left-radius: 25px;
+        border-top-right-radius: 25px;
+    }
 }
 
 .hero {
