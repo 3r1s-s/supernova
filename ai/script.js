@@ -120,6 +120,8 @@ function aiMessage(message, details) {
 
             document.querySelector('.chat').append(messageDiv);
             document.querySelector('.greeting').classList.add('hide');
+
+            waitforresponse = false;
             return;
         }
 
