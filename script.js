@@ -52,7 +52,7 @@ async function getResults(page) {
                 if (matchingApp) {
                     results.innerHTML += `
                     <div class="result-app" style="opacity:0;">
-                        <iframe src="${matchingApp.src}?query=${encodeURIComponent(query.split(' ').slice(1).join(' '))}" width="100%" frameborder="0" class="app-iframe" id="app-iframe" height="0"></iframe>
+                        <iframe src="${formatUrl(homeurl)}${matchingApp.src}?query=${encodeURIComponent(query.split(' ').slice(1).join(' '))}" width="100%" frameborder="0" class="app-iframe" id="app-iframe" height="0"></iframe>
                     </div>
                     `;
 
