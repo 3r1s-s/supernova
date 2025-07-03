@@ -226,7 +226,7 @@ function openSettings() {
                     <span class="modal-subheader">Total Queries</span>
                     <span class="" id="query-total-amount">0 / -- requests</span>
                     <div class="progressbar">
-                        <span class="progress" style="width: 0%" id="query-total"></span>
+                        <span class="progress intermediate" style="" id="query-total"></span>
                     </div>
                 </div>
             </div>
@@ -235,7 +235,7 @@ function openSettings() {
                     <span class="modal-subheader">Search</span>
                     <span class="" id="query-search-amount">0 / - requests</span>
                     <div class="progressbar">
-                        <span class="progress" style="width: 0%" id="query-search"></span>
+                        <span class="progress intermediate" style="" id="query-search"></span>
                     </div>
                 </div>
             </div>
@@ -244,7 +244,7 @@ function openSettings() {
                     <span class="modal-subheader">Weather</span>
                     <span class="" id="query-weather-amount">0 / - requests</span>
                     <div class="progressbar">
-                        <span class="progress" style="width: 0%" id="query-weather"></span>
+                        <span class="progress intermediate" style="" id="query-weather"></span>
                     </div>
                 </div>
             </div>
@@ -272,12 +272,20 @@ function openSettings() {
                 "Authorization": `Bearer ${storage.get('neu-token')}`
             }
         }).then(response => response.json()).then(data => {
-            document.getElementById('query-total-amount').innerHTML = `${data.total.used} / ${data.total.limit} requests`;
-            document.getElementById('query-search-amount').innerHTML = `${data.search.used} / ${data.search.limit} requests`;
-            document.getElementById('query-weather-amount').innerHTML = `${data.weather.used} / ${data.weather.limit} requests`;
-            document.getElementById('query-total').style.width = `${data.total.used / data.total.limit * 100}%`;
-            document.getElementById('query-search').style.width = `${data.search.used / data.search.limit * 100}%`;
-            document.getElementById('query-weather').style.width = `${data.weather.used / data.weather.limit * 100}%`;
+            document.getElementById('query-total').style.width = `0%`;
+            document.getElementById('query-search').style.width = `0%`;
+            document.getElementById('query-weather').style.width = `0%`;
+            document.querySelectorAll('.progress').forEach(element => {
+                element.classList.remove('intermediate');
+            })
+            setTimeout(() => {
+                document.getElementById('query-total-amount').innerHTML = `${data.total.used} / ${data.total.limit} requests`;
+                document.getElementById('query-search-amount').innerHTML = `${data.search.used} / ${data.search.limit} requests`;
+                document.getElementById('query-weather-amount').innerHTML = `${data.weather.used} / ${data.weather.limit} requests`;
+                document.getElementById('query-total').style.width = `${data.total.used / data.total.limit * 100}%`;
+                document.getElementById('query-search').style.width = `${data.search.used / data.search.limit * 100}%`;
+                document.getElementById('query-weather').style.width = `${data.weather.used / data.weather.limit * 100}%`;
+            }, 50);
         });
     } catch (error) {
     }
