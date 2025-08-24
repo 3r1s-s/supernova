@@ -542,9 +542,9 @@ iframe {
     align-items: center;
 }
 
-.light.footer-inner {
+.light .footer-inner {
     background-color: var(--app-200);
-    border-color: var(--app-900);
+    border: 2px solid var(--app-900);
 }
 
 .footer-text {
