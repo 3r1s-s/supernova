@@ -23,6 +23,7 @@
     --app-pink: #ff5bff;
     --app-purple: #895bff;
     --app-orange: #ff9b5b;
+    --app-white: #f1edf6;
 
     --app-dark-blue: #1e4d9e;
     --app-dark-red: #c33f33;
@@ -1091,6 +1092,7 @@ iframe {
 
 .modal-button.red {
     background: var(--app-red);
+    color: var(--app-white);
 }
 
 .modal-button.red:active {
@@ -1273,6 +1275,14 @@ iframe {
     transform-origin: 0% 50%;
     transition-property: background;
     animation: progressbar-indeterminate 1s infinite linear;
+}
+
+.light.progressbar {
+    background: var(--app-100);
+}
+
+.progressbar .progress {
+    background: var(--app-accent);
 }
 
 .loader {
