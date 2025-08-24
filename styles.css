@@ -542,6 +542,11 @@ iframe {
     align-items: center;
 }
 
+.light.footer-inner {
+    background-color: var(--app-200);
+    border-color: var(--app-900);
+}
+
 .footer-text {
     opacity: 0.5;
 }
