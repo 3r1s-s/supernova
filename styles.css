@@ -209,8 +209,9 @@ iframe {
     justify-content: left;
     gap: 1rem;
     font-size: 1rem;
-    padding: 10px 0 0 150px;
+    padding: 10px 0;
     box-sizing: border-box;
+    max-width: 1200px;
 }
 
 .search-tab {
@@ -377,7 +378,11 @@ iframe {
 .content-top {
     padding: 20px;
     max-width: 1200px;
-    margin: 0 150px;
+}
+
+.content-inner {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .result {
@@ -413,7 +418,7 @@ iframe {
     padding: 0 20px;
     gap: 20px;
     max-width: 1200px;
-    margin: 0 150px;
+    /* margin: 0 150px; */
     /* align-items: center; */
     min-height: 100vh;
 }
@@ -432,9 +437,10 @@ iframe {
 }
 
 .results-extra {
-    width: 450px;
-    flex-shrink: 0;
+    max-width: 450px;
+    flex-shrink: 1;
     flex-grow: 0;
+    width: 100%;
 }
 
 .result-title {
