@@ -331,6 +331,8 @@ function toggleApps() {
     const appsInner = document.querySelector(".apps-inner");
     const frame = document.querySelector(".frame");
 
+    frame.src = `https://eris.cafe/apps/?light=${!settings.get('darkMode')}`;
+
     if (!frame.classList.contains("open")) {
         frame.classList.add("open");
         document.addEventListener("click", clickAway);
