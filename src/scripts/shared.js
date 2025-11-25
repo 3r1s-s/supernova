@@ -1,5 +1,5 @@
 const neuboturl = 'https://neubot.joshattic.us';
-const homeurl = 'https://eris.cafe/supernova';
+const homeurl = 'https://supernova.eris.cafe/';
 // const homeurl = 'http://127.0.0.1:5500';
 const url = 'https://api.novasearch.xyz';
 
