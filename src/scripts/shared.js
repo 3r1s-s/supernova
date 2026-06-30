@@ -220,7 +220,7 @@ function openSettings() {
                 </div>
             </div>
             <span class="modal-subheader">Rate Limits</span>
-            <span class="modal-subtext">Your limits will reset in 29 day(s). Limits do not roll over, any remaining queries at the end of the month will be discarded.</span>
+            <span class="modal-subtext">Your limits will reset in <span id="days-remaining">--</span> day(s). Limits do not roll over, any remaining queries at the end of the month will be discarded.</span>
             <div class="modal-section">
                 <div style="display:flex;gap: 10px;flex-direction: column;">
                     <span class="modal-subheader">Search</span>
@@ -273,6 +273,7 @@ function openSettings() {
                 document.getElementById('query-weather-amount').innerHTML = `${data.weather.used} / ${data.weather.limit} requests`;
                 document.getElementById('query-search').style.width = `${data.search.used / data.search.limit * 100}%`;
                 document.getElementById('query-weather').style.width = `${data.weather.used / data.weather.limit * 100}%`;
+                document.getElementById('days-remaining').innerHTML = `${data.reset.days_remaining}`;
             }, 50);
         });
     } catch (error) {
