@@ -272,17 +272,14 @@ function openSettings() {
                 "Authorization": `Bearer ${storage.get('neu-token')}`
             }
         }).then(response => response.json()).then(data => {
-            document.getElementById('query-total').style.width = `0%`;
             document.getElementById('query-search').style.width = `0%`;
             document.getElementById('query-weather').style.width = `0%`;
             document.querySelectorAll('.progress').forEach(element => {
                 element.classList.remove('intermediate');
             })
             setTimeout(() => {
-                document.getElementById('query-total-amount').innerHTML = `${data.total.used} / ${data.total.limit} requests`;
                 document.getElementById('query-search-amount').innerHTML = `${data.search.used} / ${data.search.limit} requests`;
                 document.getElementById('query-weather-amount').innerHTML = `${data.weather.used} / ${data.weather.limit} requests`;
-                document.getElementById('query-total').style.width = `${data.total.used / data.total.limit * 100}%`;
                 document.getElementById('query-search').style.width = `${data.search.used / data.search.limit * 100}%`;
                 document.getElementById('query-weather').style.width = `${data.weather.used / data.weather.limit * 100}%`;
             }, 50);
