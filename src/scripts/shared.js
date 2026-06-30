@@ -223,15 +223,6 @@ function openSettings() {
             <span class="modal-subtext">Your limits will reset in 29 day(s). Limits do not roll over, any remaining queries at the end of the month will be discarded.</span>
             <div class="modal-section">
                 <div style="display:flex;gap: 10px;flex-direction: column;">
-                    <span class="modal-subheader">Total Queries</span>
-                    <span class="" id="query-total-amount">0 / -- requests</span>
-                    <div class="progressbar">
-                        <span class="progress intermediate" style="" id="query-total"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-section">
-                <div style="display:flex;gap: 10px;flex-direction: column;">
                     <span class="modal-subheader">Search</span>
                     <span class="" id="query-search-amount">0 / - requests</span>
                     <div class="progressbar">
