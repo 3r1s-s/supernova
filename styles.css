@@ -478,6 +478,22 @@ iframe {
     white-space: nowrap;
 }
 
+.result-link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.result-favicon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+
 .result-answer {
     display: flex;
     flex-direction: column;

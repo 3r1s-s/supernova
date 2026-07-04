@@ -123,7 +123,10 @@ async function getResults(page) {
                                             </span>
                                         </div>
                                     </div>
-                                    <span class="result-link">${result.url.sanitize()}</span>
+                                    <div class="result-link-wrapper">
+                                        <img class="result-favicon" src="${url}/api/favicon?url=${encodeURIComponent(result.url)}" alt="" loading="lazy">
+                                        <span class="result-link">${result.url.sanitize()}</span>
+                                    </div>
                                     <span class="result-desc">${desc}</span>
                                 </a>
                             `;
