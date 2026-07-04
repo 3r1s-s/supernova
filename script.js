@@ -113,7 +113,7 @@ async function getResults(page) {
                             const rating = totalVotes > 0 ? Math.round((upvotes / totalVotes) * 100) : 100;
 
                             results.innerHTML += `
-                                <a class="result" href="${result.url}" ${settings.get('open-new-window') ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+                                <a class="result" href="${result.url}" onclick="trackClick('${result.url.replace(/'/g, "\\'")}')" ${settings.get('open-new-window') ? 'target="_blank" rel="noopener noreferrer"' : ''}>
                                     <div class="result-header">
                                         <h1 class="result-title">${result.title.sanitize()}</h1>
                                         <div class="result-votes">
@@ -243,6 +243,13 @@ function paginate(data) {
         option.href = `${formatUrl(homeurl)}/?q=${query}&page=${i}`;
         pageselect.appendChild(option);
     }
+}
+
+function trackClick(clickUrl) {
+    fetch(`${url}/api/click?url=${encodeURIComponent(clickUrl)}`, {
+        method: 'POST',
+        keepalive: true
+    });
 }
 
 function clearSearch() {
