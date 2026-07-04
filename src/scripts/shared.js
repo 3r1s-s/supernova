@@ -1,7 +1,7 @@
 const neuboturl = 'https://neubot.joshattic.us';
 const homeurl = 'https://supernova.eris.cafe/';
 // const homeurl = 'http://127.0.0.1:5500';
-const url = 'https://api.novasearch.xyz';
+const url = 'https://nova.joshattic.us';
 
 const formatUrl = url => url.endsWith('/') ? url.slice(0, -1) : url;
 

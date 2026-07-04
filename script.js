@@ -9,7 +9,7 @@ const app = document.querySelector('.app');
 window.addEventListener('load', (event) => {
     if (!query) {
         startPage();
-            app.style.opacity = 1;
+        app.style.opacity = 1;
         return;
     }
 
@@ -38,12 +38,38 @@ async function getResults(page) {
     const apps = await fetchApps();
     let starttime = new Date().getTime();
     let success = true;
+
     try {
-        fetch(`${url}/search?query=${query.replace(/^define\s+/, '')}&page=${page}&page_size=${page_size}`)
+        fetch(`${url}/api/search?q=${encodeURIComponent(query.replace(/^define\s+/, ''))}&p=${page}&limit=10`)
             .then(response => response.json())
             .then(data => {
                 results.innerHTML = '';
                 resultsExtra.innerHTML = '';
+
+                if (data.answer) {
+                    const formattedAnswer = data.answer.sanitize()
+                        .replace(/&lt;b&gt;/g, '<b>')
+                        .replace(/&lt;\/b&gt;/g, '</b>')
+                        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                            const decodedUrl = url.replace(/&amp;/g, '&');
+                            return `<a href="${decodedUrl}" target="_blank">${text}</a>`;
+                        })
+                        .replace(/\n/g, '<br>');
+
+                    results.innerHTML += `
+                        <div class="result-answer">
+                            <div class="answer-header">
+                                <svg class="answer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                </svg>
+                                <span>Answers from the web</span>
+                            </div>
+                            <div class="answer-content">
+                                ${formattedAnswer}
+                            </div>
+                        </div>
+                    `;
+                }
 
                 const matchingApp = apps.find(app =>
                     app.keywords.split(', ').some(keyword => query.includes(keyword))
@@ -78,20 +104,34 @@ async function getResults(page) {
                 }
                 if (success) {
                     paginate(data);
-                    if (data.results.length > 0) {
+                    if (data.results && data.results.length > 0) {
                         data.results.forEach(result => {
+                            const desc = result.snippet ? result.snippet.sanitize().replace(/&lt;strong&gt;/g, '<strong>').replace(/&lt;\/strong&gt;/g, '</strong>') : (result.meta_description ? result.meta_description.sanitize() : '<i>No description available.</i>');
+                            const upvotes = result.thumbs_up ?? 0;
+                            const downvotes = result.thumbs_down ?? 0;
+                            const totalVotes = upvotes + downvotes;
+                            const rating = totalVotes > 0 ? Math.round((upvotes / totalVotes) * 100) : 100;
+
                             results.innerHTML += `
                                 <a class="result" href="${result.url}" ${settings.get('open-new-window') ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                                    <h1 class="result-title">${result.title.sanitize()}</h1>
+                                    <div class="result-header">
+                                        <h1 class="result-title">${result.title.sanitize()}</h1>
+                                        <div class="result-votes">
+                                            <span class="vote-item">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="vote-icon"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                                                <span>${rating}%</span>
+                                            </span>
+                                        </div>
+                                    </div>
                                     <span class="result-link">${result.url.sanitize()}</span>
-                                    <span class="result-desc">${result.description.sanitize() || '<i>No description available.</i>'}</span>
+                                    <span class="result-desc">${desc}</span>
                                 </a>
                             `;
                         });
 
                         const endtime = new Date().getTime();
                         const duration = (endtime - starttime) / 1000;
-                        document.querySelector('.result-count').innerHTML = `${data.total_results} results found in ${duration.toFixed(2)} seconds.`;
+                        document.querySelector('.result-count').innerHTML = `${data.total} results found in ${duration.toFixed(2)} seconds.`;
                     } else {
                         results.innerHTML = '';
                         resultsExtra.innerHTML = '';
@@ -100,7 +140,7 @@ async function getResults(page) {
                                 <div class="result">
                                     <h1 class="result-title" style="color: var(--app-text);">Error</h1>
                                     <span>Try searching for something less specific.</span>
-                                    <i class="subtext">Error: ${error}</i>
+                                    <i class="subtext">Error: No results returned</i>
                                 </div>
                             `;
                     }
@@ -110,24 +150,23 @@ async function getResults(page) {
                     if (title) {
                         getWikiPreview(title).then(info => {
                             if (info.valid) {
-
                                 resultsExtra.innerHTML += `
-                            <div class="wiki-preview ${info.thumbnail != null ? '' : 'no-image'}" style="opacity:0;">
-                            <div class="wiki-banner">
-                            <h2 id="wiki-title" class="${info.title.length > 25 ? 'long-title' : ''}">${info.title}</h2>
-                            <div class="wiki-image-container">
-                            <img id="wiki-image" src="${info.thumbnail}"/>
-                            </div>
-                            </div>
-                            <div class="wiki-info">
-                            <p id="wiki-desc">
-                            ${info.extract.length > 200 ? info.extract.slice(0, 200) + '...' : info.extract}.
-                            <a href="https://en.wikipedia.org/wiki/${info.title}" target="_blank" rel="noopener noreferrer">Read more</a>
-                            </p>
-                            ${info.website ? `<p id="wiki-site">Official Site: <a href="${info.website}" target="_blank" rel="noopener noreferrer">${new URL(info.website).hostname}</a></p>` : ''}
-                            </div>
-                            </div>
-                            `;
+                                <div class="wiki-preview ${info.thumbnail != null ? '' : 'no-image'}" style="opacity:0;">
+                                <div class="wiki-banner">
+                                <h2 id="wiki-title" class="${info.title.length > 25 ? 'long-title' : ''}">${info.title}</h2>
+                                <div class="wiki-image-container">
+                                <img id="wiki-image" src="${info.thumbnail}"/>
+                                </div>
+                                </div>
+                                <div class="wiki-info">
+                                <p id="wiki-desc">
+                                ${info.extract.length > 200 ? info.extract.slice(0, 200) + '...' : info.extract}.
+                                <a href="https://en.wikipedia.org/wiki/${info.title}" target="_blank" rel="noopener noreferrer">Read more</a>
+                                </p>
+                                ${info.website ? `<p id="wiki-site">Official Site: <a href="${info.website}" target="_blank" rel="noopener noreferrer">${new URL(info.website).hostname}</a></p>` : ''}
+                                </div>
+                                </div>
+                                `;
 
                                 setTimeout(() => {
                                     document.querySelector('.wiki-preview').style.opacity = 1;
@@ -137,19 +176,22 @@ async function getResults(page) {
                     }
                 });
             })
+            .catch(err => {
+                console.log(err);
+                results.innerHTML = '';
+                resultsExtra.innerHTML = '';
+                document.querySelector('.result-count').innerHTML = '';
+                results.innerHTML += `
+                    <div class="result">
+                        <h1 class="result-title" style="color: var(--app-text);">Error</h1>
+                        <span>Try searching for something less specific.</span>
+                        <i class="subtext">Error: ${err}</i>
+                    </div>
+                `;
+            });
     } catch (error) {
         console.log(error);
-        results.innerHTML = '';
-        resultsExtra.innerHTML = '';
-        document.querySelector('.result-count').innerHTML = '';
-        results.innerHTML += `
-            <div class="result">
-                <h1 class="result-title" style="color: var(--app-text);">Error</h1>
-                <span>Try searching for something less specific.</span>
-                <i class="subtext">Error: ${error}</i>
-            </div>
-        `;
-    };
+    }
 }
 
 function searchBar() {
@@ -177,8 +219,21 @@ async function fetchApps() {
 
 function paginate(data) {
     const pageselect = document.getElementById('pages-selector');
+    if (!pageselect) return;
     pageselect.innerHTML = '';
-    for (let i = 1; i <= Math.min(data.total_pages - 1, 8); i++) {
+
+    const totalPages = data.total_pages;
+    if (!totalPages || totalPages <= 1) {
+        if (pageselect.parentElement) {
+            pageselect.parentElement.style.display = 'none';
+        }
+        return;
+    }
+
+    if (pageselect.parentElement) {
+        pageselect.parentElement.style.display = '';
+    }
+    for (let i = 1; i <= Math.min(totalPages, 8); i++) {
         const option = document.createElement('a');
         option.value = i;
         option.innerHTML = i;
@@ -196,34 +251,34 @@ function clearSearch() {
 }
 
 async function getWikidataWebsite(id) {
-  const res = await fetch(`https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=${id}&property=P856&format=json&origin=*`);
-  const data = await res.json();
-  return data.claims?.P856?.[0]?.mainsnak?.datavalue?.value || null;
+    const res = await fetch(`https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=${id}&property=P856&format=json&origin=*`);
+    const data = await res.json();
+    return data.claims?.P856?.[0]?.mainsnak?.datavalue?.value || null;
 }
 
 async function getWikiPreview(title) {
-  const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(title)}&prop=extracts|pageimages|pageprops&exintro=1&explaintext=1&piprop=thumbnail&pithumbsize=300&origin=*`);
-  const data = await response.json();
-  const page = Object.values(data.query.pages)[0];
+    const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(title)}&prop=extracts|pageimages|pageprops&exintro=1&explaintext=1&piprop=thumbnail&pithumbsize=300&origin=*`);
+    const data = await response.json();
+    const page = Object.values(data.query.pages)[0];
 
-  const valid = !page.extract.toLowerCase().includes("may refer to");
-  const wikidataID = page.pageprops?.wikibase_item || null;
-  const website = wikidataID ? await getWikidataWebsite(wikidataID) : null;
+    const valid = !page.extract.toLowerCase().includes("may refer to");
+    const wikidataID = page.pageprops?.wikibase_item || null;
+    const website = wikidataID ? await getWikidataWebsite(wikidataID) : null;
 
-  return {
-    title: page.title,
-    extract: page.extract,
-    thumbnail: page.thumbnail?.source || null,
-    website: website,
-    valid: valid,
-  };
+    return {
+        title: page.title,
+        extract: page.extract,
+        thumbnail: page.thumbnail?.source || null,
+        website: website,
+        valid: valid,
+    };
 }
 
 async function searchWikipedia(query) {
-  const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
-  const data = await res.json();
-  const topTitle = data.query.search[0]?.title;
-  return topTitle;
+    const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
+    const data = await res.json();
+    const topTitle = data.query.search[0]?.title;
+    return topTitle;
 }
 
 function startPage() {
