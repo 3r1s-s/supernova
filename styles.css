@@ -485,7 +485,7 @@ iframe {
     background: var(--app-600);
     border-radius: 25px;
     color: var(--app-text);
-    margin-bottom: 10px;
+    margin-bottom: 0;
     border: 1px solid var(--app-700);
 }
 
